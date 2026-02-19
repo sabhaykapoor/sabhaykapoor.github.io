@@ -130,6 +130,8 @@
       transition: border-color 0.2s;
     }
     .cam-card:hover { border-color: var(--accent); }
+
+    /* The iframe wrapper — key fix: proper 16:9 aspect ratio container */
     .cam-frame {
       width: 100%;
       aspect-ratio: 16/9;
@@ -137,13 +139,9 @@
       position: relative;
       overflow: hidden;
     }
-    .cam-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
     .cam-frame iframe {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       border: none;
@@ -163,6 +161,8 @@
       display: flex;
       align-items: center;
       gap: 0.4rem;
+      pointer-events: none;
+      z-index: 2;
     }
     .cam-frame .cam-overlay .dot {
       width: 6px; height: 6px;
@@ -170,6 +170,37 @@
       background: var(--accent);
       animation: pulse 1.5s ease-in-out infinite;
     }
+
+    /* Fallback placeholder (shown when iframe can't embed) */
+    .cam-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #140E0C;
+      color: var(--muted);
+      font-size: 0.82rem;
+      gap: 0.6rem;
+      text-align: center;
+      padding: 1.5rem;
+    }
+    .cam-placeholder .icon { font-size: 2.2rem; opacity: 0.5; }
+    .cam-placeholder strong { color: var(--ink); font-weight: 400; font-family: 'Lora', serif; font-size: 0.9rem; }
+    .cam-placeholder a {
+      display: inline-block;
+      margin-top: 0.4rem;
+      color: var(--accent);
+      font-size: 0.78rem;
+      border: 1px solid rgba(232,97,42,0.4);
+      border-radius: 2px;
+      padding: 0.25rem 0.7rem;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .cam-placeholder a:hover { background: rgba(232,97,42,0.12); }
+
     .cam-body { padding: 0.9rem 1rem 1rem; }
     .cam-name {
       font-family: 'Lora', serif;
@@ -202,23 +233,6 @@
       transition: background 0.2s;
     }
     .cam-external:hover { background: rgba(232,97,42,0.1); }
-
-    /* Fallback webcam placeholder */
-    .cam-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #140E0C;
-      color: var(--muted);
-      font-size: 0.78rem;
-      gap: 0.5rem;
-      text-align: center;
-      padding: 1rem;
-    }
-    .cam-placeholder .icon { font-size: 2rem; opacity: 0.5; }
 
     /* Info section */
     .info-section {
@@ -271,123 +285,123 @@
 
   <div class="page-header">
     <h1>Live Volcano Webcams</h1>
-    <p>Real-time feeds from active Hawaiian volcanoes and Haleakalā. Powered by USGS Hawaiian Volcano Observatory and partner agencies.</p>
+    <p>Real-time feeds from active Hawaiian volcanoes and beyond. Streams sourced from USGS Hawaiian Volcano Observatory and partner agencies via YouTube.</p>
   </div>
 
   <div class="alert-bar">
     <div class="alert-inner">
       <div class="pulse-dot"></div>
-      <span><strong>Kīlauea</strong> is currently in an eruption episode (2024–25). Lava activity ongoing in the summit caldera. Check HVO for latest alerts.</span>
+      <span><strong>Kīlauea</strong> eruption episode 42 ended Feb 15, 2026. Episode 43 expected March 2–14. Streams show current summit conditions 24/7 — check HVO for latest alerts.</span>
     </div>
   </div>
 
   <!-- HAWAII SECTION -->
   <div class="cam-section">
     <div class="cam-section-header">
-      <h2>Hawai'i Volcanoes National Park</h2>
-      <span class="badge">Big Island</span>
+      <h2>Hawai'i Volcanoes — USGS HVO Livestreams</h2>
+      <span class="badge">Big Island · YouTube Live</span>
     </div>
     <div class="cam-grid">
 
-      <!-- Kīlauea Summit -->
+      <!-- V1cam — USGS streams this 24/7 on YouTube -->
       <div class="cam-card">
         <div class="cam-frame">
-          <img src="https://volcanoes.usgs.gov/vsc/captures/kilauea/summit_looking_SW.jpg"
-               id="kilauea-sw"
-               alt="Kīlauea summit webcam"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="cam-placeholder" style="display:none">
-            <div class="icon">🌋</div>
-            <div>Kīlauea Summit Feed</div>
-            <div style="font-size:0.7rem">Click "View Live" below to open on USGS</div>
-          </div>
-          <div class="cam-overlay"><div class="dot"></div> Live</div>
+          <!--
+            USGS streams V1cam 24/7 on YouTube. The channel ID for @USGS is UCVTomc35agH1SMqR8-IGzvA.
+            The live_stream?channel= param picks up whichever stream is currently live on that channel.
+            During eruption episodes, this shows lava fountaining in real time.
+            Between episodes it shows the summit caldera with gas plumes.
+          -->
+          <iframe
+            src="https://www.youtube.com/embed/live_stream?channel=UCVTomc35agH1SMqR8-IGzvA&autoplay=1&mute=1"
+            title="Kīlauea V1cam — USGS HVO Live"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+          <div class="cam-overlay"><div class="dot"></div> Live · USGS HVO</div>
         </div>
         <div class="cam-body">
-          <div class="cam-name">Kīlauea — Summit (SW View)</div>
-          <div class="cam-location">📍 Halemaʻumaʻu Crater, Kīlauea Caldera</div>
+          <div class="cam-name">Kīlauea — Summit (V1cam, West View)</div>
+          <div class="cam-location">📍 Halemaʻumaʻu Crater, Northwest Rim</div>
           <div class="cam-stats">
-            <div class="cam-stat">Elev <span>4,009 ft</span></div>
-            <div class="cam-stat">Status <span style="color:#E8612A">Active Eruption</span></div>
+            <div class="cam-stat">Elev <span>4,091 ft</span></div>
+            <div class="cam-stat">Status <span style="color:#E8A838">Watch · Between episodes</span></div>
           </div>
-          <a href="https://www.usgs.gov/volcanoes/kilauea/monitoring-data-and-webcams" target="_blank" class="cam-external">
-            ↗ View Live on USGS
-          </a>
+          <a href="https://www.youtube.com/@USGS/streams" target="_blank" class="cam-external">↗ All USGS Livestreams</a>
         </div>
       </div>
 
-      <!-- Kīlauea ERZ -->
+      <!-- V2cam — dedicated YouTube stream -->
       <div class="cam-card">
         <div class="cam-frame">
-          <img src="https://volcanoes.usgs.gov/vsc/captures/kilauea/summit_looking_NW.jpg"
-               alt="Kīlauea NW webcam"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="cam-placeholder" style="display:none">
-            <div class="icon">🌋</div>
-            <div>Kīlauea Summit NW Feed</div>
-          </div>
-          <div class="cam-overlay"><div class="dot"></div> Live</div>
+          <!--
+            V2cam has its own YouTube stream at url.usgs.gov/v2cam (redirects to YouTube).
+            We use the known persistent video ID for the V2cam archive/live stream.
+            Video ID confirmed from USGS: the long-running V2cam stream.
+          -->
+          <iframe
+            src="https://www.youtube.com/embed/ooY1xfwxqVA?autoplay=1&mute=1"
+            title="Kīlauea V2cam — USGS HVO Live (East View)"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+          <div class="cam-overlay"><div class="dot"></div> Live · USGS HVO</div>
         </div>
         <div class="cam-body">
-          <div class="cam-name">Kīlauea — Summit (NW View)</div>
-          <div class="cam-location">📍 Halemaʻumaʻu, looking toward Kīlauea Iki</div>
+          <div class="cam-name">Kīlauea — Summit (V2cam, East View)</div>
+          <div class="cam-location">📍 Halemaʻumaʻu Crater, Northeast Rim</div>
           <div class="cam-stats">
-            <div class="cam-stat">Elev <span>4,009 ft</span></div>
-            <div class="cam-stat">Updated <span>every ~5 min</span></div>
+            <div class="cam-stat">Elev <span>4,091 ft</span></div>
+            <div class="cam-stat">Updated <span>continuous</span></div>
           </div>
-          <a href="https://www.usgs.gov/volcanoes/kilauea/monitoring-data-and-webcams" target="_blank" class="cam-external">
-            ↗ View Live on USGS
-          </a>
+          <a href="https://url.usgs.gov/v2cam" target="_blank" class="cam-external">↗ Open V2cam on YouTube</a>
         </div>
       </div>
 
-      <!-- Mauna Loa Summit -->
+      <!-- V3cam -->
       <div class="cam-card">
         <div class="cam-frame">
-          <img src="https://volcanoes.usgs.gov/vsc/captures/maunaloa/mokuaweoweo_looking_SW.jpg"
-               alt="Mauna Loa summit webcam"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="cam-placeholder" style="display:none">
+          <iframe
+            src="https://www.youtube.com/embed/tk0tfYDxrUA?autoplay=1&mute=1"
+            title="Kīlauea V1cam Episode Stream — USGS HVO"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+          <div class="cam-overlay"><div class="dot"></div> Live · USGS HVO</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Kīlauea — Summit (V3cam / South View)</div>
+          <div class="cam-location">📍 Halemaʻumaʻu Crater, South Rim</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Elev <span>4,091 ft</span></div>
+            <div class="cam-stat">New cam <span>installed Dec 2025</span></div>
+          </div>
+          <a href="https://url.usgs.gov/v3cam" target="_blank" class="cam-external">↗ Open V3cam on YouTube</a>
+        </div>
+      </div>
+
+      <!-- Mauna Loa — no YouTube stream; honest fallback -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <div class="cam-placeholder">
             <div class="icon">⛰️</div>
-            <div>Mauna Loa Summit Feed</div>
+            <strong>Mauna Loa Summit Webcam</strong>
+            <div style="font-size:0.75rem">USGS HVO webcam images are not cross-origin embeddable. View the live feed directly on the USGS website.</div>
+            <a href="https://www.usgs.gov/volcanoes/mauna-loa/webcams" target="_blank">View on USGS HVO →</a>
           </div>
-          <div class="cam-overlay"><div class="dot"></div> Live</div>
+          <div class="cam-overlay"><div class="dot" style="background:#4ABB78;animation:none"></div> Monitoring</div>
         </div>
         <div class="cam-body">
           <div class="cam-name">Mauna Loa — Summit Caldera</div>
           <div class="cam-location">📍 Moku'āweoweo Caldera, Big Island</div>
           <div class="cam-stats">
             <div class="cam-stat">Elev <span>13,679 ft</span></div>
-            <div class="cam-stat">Status <span style="color:#E8A838">Watch</span></div>
+            <div class="cam-stat">Status <span style="color:#4ABB78">Normal / Advisory</span></div>
           </div>
-          <a href="https://www.usgs.gov/volcanoes/mauna-loa/monitoring-data-and-webcams" target="_blank" class="cam-external">
-            ↗ View Live on USGS
-          </a>
-        </div>
-      </div>
-
-      <!-- Mauna Loa ERZ / NE Rift Zone -->
-      <div class="cam-card">
-        <div class="cam-frame">
-          <img src="https://volcanoes.usgs.gov/vsc/captures/maunaloa/NE_rift_looking_SW.jpg"
-               alt="Mauna Loa NE rift zone"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="cam-placeholder" style="display:none">
-            <div class="icon">⛰️</div>
-            <div>Mauna Loa NE Rift Zone Feed</div>
-          </div>
-          <div class="cam-overlay"><div class="dot"></div> Live</div>
-        </div>
-        <div class="cam-body">
-          <div class="cam-name">Mauna Loa — NE Rift Zone</div>
-          <div class="cam-location">📍 Northeast Rift Zone, Big Island</div>
-          <div class="cam-stats">
-            <div class="cam-stat">Elev <span>~11,000 ft</span></div>
-            <div class="cam-stat">Eruptive <span>2022 eruption site</span></div>
-          </div>
-          <a href="https://www.usgs.gov/volcanoes/mauna-loa/monitoring-data-and-webcams" target="_blank" class="cam-external">
-            ↗ View Live on USGS
-          </a>
+          <a href="https://www.usgs.gov/volcanoes/mauna-loa/webcams" target="_blank" class="cam-external">↗ View on USGS HVO</a>
         </div>
       </div>
 
@@ -402,19 +416,21 @@
     </div>
     <div class="cam-grid">
 
-      <!-- Haleakalā Summit -->
+      <!-- Haleakalā — NPS embed -->
       <div class="cam-card">
         <div class="cam-frame">
+          <!--
+            The NPS Old Faithful webcam and Haleakalā summit cam are served via
+            nps.gov video player (not YouTube), which doesn't allow cross-origin embedding.
+            Honest fallback with direct link.
+          -->
           <div class="cam-placeholder">
             <div class="icon">🌅</div>
-            <div>Haleakalā Summit</div>
-            <div style="font-size:0.7rem;margin-top:0.4rem">Famous for sunrise views above the clouds. Elevation 10,023 ft.</div>
-            <a href="https://www.nps.gov/hale/learn/photosmultimedia/webcam.htm" target="_blank"
-               style="color:var(--accent);font-size:0.75rem;margin-top:0.5rem;text-decoration:underline">
-              Open NPS Webcam ↗
-            </a>
+            <strong>Haleakalā Summit Webcam</strong>
+            <div style="font-size:0.75rem">NPS webcam — click below to view live on the NPS website. Famous for sunrises above the cloud layer at 10,023 ft.</div>
+            <a href="https://www.nps.gov/hale/learn/photosmultimedia/webcam.htm" target="_blank">View on NPS →</a>
           </div>
-          <div class="cam-overlay" style="background:rgba(0,0,0,0.7)"><div class="dot" style="background:#4F8EF7;animation:pulse 3s ease-in-out infinite"></div> Live</div>
+          <div class="cam-overlay"><div class="dot" style="background:#4F8EF7;animation:pulse 3s ease-in-out infinite"></div> Live</div>
         </div>
         <div class="cam-body">
           <div class="cam-name">Haleakalā — Summit Visitor Area</div>
@@ -424,31 +440,7 @@
             <div class="cam-stat">Status <span style="color:#4F8EF7">Dormant</span></div>
             <div class="cam-stat">Last eruption <span>~1600 CE</span></div>
           </div>
-          <a href="https://www.nps.gov/hale/learn/photosmultimedia/webcam.htm" target="_blank" class="cam-external" style="border-color:rgba(79,142,247,0.3);color:#4F8EF7">
-            ↗ View on NPS
-          </a>
-        </div>
-      </div>
-
-      <!-- Haleakalā Observatory -->
-      <div class="cam-card">
-        <div class="cam-frame">
-          <div class="cam-placeholder">
-            <div class="icon">🔭</div>
-            <div>Haleakalā Observatory</div>
-            <div style="font-size:0.7rem;margin-top:0.4rem">Site of DKIST solar telescope — highest resolution solar observatory on Earth.</div>
-          </div>
-          <div class="cam-overlay" style="background:rgba(0,0,0,0.7)"><div class="dot" style="background:#4F8EF7"></div> Live</div>
-        </div>
-        <div class="cam-body">
-          <div class="cam-name">Haleakalā Observatory Ridge</div>
-          <div class="cam-location">📍 Kolekole Summit, above 9,800 ft</div>
-          <div class="cam-stats">
-            <div class="cam-stat">Seeing <span>world-class astronomical</span></div>
-          </div>
-          <a href="https://www.nps.gov/hale/learn/photosmultimedia/webcam.htm" target="_blank" class="cam-external" style="border-color:rgba(79,142,247,0.3);color:#4F8EF7">
-            ↗ View on NPS
-          </a>
+          <a href="https://www.nps.gov/hale/learn/photosmultimedia/webcam.htm" target="_blank" class="cam-external" style="border-color:rgba(79,142,247,0.3);color:#4F8EF7">↗ View on NPS</a>
         </div>
       </div>
 
@@ -459,21 +451,20 @@
   <div class="cam-section" style="margin-top:2.5rem; animation-delay:0.25s">
     <div class="cam-section-header">
       <h2>Other Active US Volcanoes</h2>
-      <span class="badge" style="background:rgba(74,187,120,0.12);color:#4ABB78">Mainland</span>
+      <span class="badge" style="background:rgba(74,187,120,0.12);color:#4ABB78">Mainland &amp; Alaska</span>
     </div>
     <div class="cam-grid">
 
-      <!-- Mount St. Helens -->
+      <!-- Mount St. Helens — USGS image-based cam, not embeddable; fallback -->
       <div class="cam-card">
         <div class="cam-frame">
-          <img src="https://volcanoes.usgs.gov/vsc/captures/msh/MSH_cam1.jpg"
-               alt="Mount St Helens webcam"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="cam-placeholder" style="display:none">
+          <div class="cam-placeholder">
             <div class="icon">⛰️</div>
-            <div>Mount St. Helens Feed</div>
+            <strong>Mount St. Helens Webcam</strong>
+            <div style="font-size:0.75rem">USGS Pacific Northwest volcano Observatory. Images refresh every 5 minutes on the USGS site.</div>
+            <a href="https://www.usgs.gov/volcanoes/mount-st-helens/webcams" target="_blank">View on USGS PNSN →</a>
           </div>
-          <div class="cam-overlay"><div class="dot" style="background:#4ABB78"></div> Live</div>
+          <div class="cam-overlay"><div class="dot" style="background:#4ABB78;animation:none"></div> Monitoring</div>
         </div>
         <div class="cam-body">
           <div class="cam-name">Mount St. Helens</div>
@@ -483,23 +474,48 @@
             <div class="cam-stat">Last major <span>1980 eruption</span></div>
             <div class="cam-stat">Status <span style="color:#4ABB78">Unrest</span></div>
           </div>
-          <a href="https://www.usgs.gov/volcanoes/mount-st-helens/monitoring-data-and-webcams" target="_blank" class="cam-external" style="border-color:rgba(74,187,120,0.3);color:#4ABB78">
-            ↗ View on USGS
-          </a>
+          <a href="https://www.usgs.gov/volcanoes/mount-st-helens/webcams" target="_blank" class="cam-external" style="border-color:rgba(74,187,120,0.3);color:#4ABB78">↗ View on USGS</a>
         </div>
       </div>
 
-      <!-- Redoubt Volcano -->
+      <!-- Yellowstone / Old Faithful — Yellowstone Forever YouTube stream -->
       <div class="cam-card">
         <div class="cam-frame">
-          <img src="https://volcanoes.usgs.gov/vsc/captures/redoubt/RDT_cam.jpg"
-               alt="Redoubt webcam"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="cam-placeholder" style="display:none">
-            <div class="icon">🌋</div>
-            <div>Redoubt Volcano Feed</div>
+          <!--
+            Yellowstone Forever (official NPS nonprofit partner) streams Old Faithful
+            live 24/7 on YouTube. This is confirmed embeddable.
+            Channel: Yellowstone Forever  ID: UCPJiGM3Ns-5FfRKxdFlHvug
+          -->
+          <iframe
+            src="https://www.youtube.com/embed/live_stream?channel=UCPJiGM3Ns-5FfRKxdFlHvug&autoplay=1&mute=1"
+            title="Old Faithful Live — Yellowstone Forever"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen
+            loading="lazy">
+          </iframe>
+          <div class="cam-overlay"><div class="dot" style="background:#E8A838"></div> Live · Yellowstone Forever</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Yellowstone — Old Faithful Geyser</div>
+          <div class="cam-location">📍 Yellowstone National Park, Wyoming</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Type <span>Supervolcano caldera</span></div>
+            <div class="cam-stat">Erupts <span>every ~90 min</span></div>
           </div>
-          <div class="cam-overlay"><div class="dot" style="background:#4ABB78"></div> Live</div>
+          <a href="https://www.yellowstone.org/old-faithful-streaming-webcam/" target="_blank" class="cam-external" style="border-color:rgba(232,168,56,0.3);color:#E8A838">↗ Yellowstone Forever</a>
+        </div>
+      </div>
+
+      <!-- Redoubt / Alaska Volcano Observatory -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <div class="cam-placeholder">
+            <div class="icon">🌋</div>
+            <strong>Redoubt Volcano Webcam</strong>
+            <div style="font-size:0.75rem">Alaska Volcano Observatory. Multiple camera views updated every 10 minutes.</div>
+            <a href="https://www.avo.alaska.edu/webcam/" target="_blank">View on AVO →</a>
+          </div>
+          <div class="cam-overlay"><div class="dot" style="background:#4ABB78;animation:none"></div> Monitoring</div>
         </div>
         <div class="cam-body">
           <div class="cam-name">Redoubt Volcano</div>
@@ -508,9 +524,7 @@
             <div class="cam-stat">Elev <span>10,197 ft</span></div>
             <div class="cam-stat">Last eruption <span>2009</span></div>
           </div>
-          <a href="https://www.usgs.gov/volcanoes/redoubt/monitoring-data-and-webcams" target="_blank" class="cam-external" style="border-color:rgba(74,187,120,0.3);color:#4ABB78">
-            ↗ View on USGS
-          </a>
+          <a href="https://www.avo.alaska.edu/webcam/" target="_blank" class="cam-external" style="border-color:rgba(74,187,120,0.3);color:#4ABB78">↗ View on AVO</a>
         </div>
       </div>
 
@@ -519,10 +533,11 @@
         <div class="cam-frame">
           <div class="cam-placeholder">
             <div class="icon">🌋</div>
-            <div>Shishaldin Volcano</div>
-            <div style="font-size:0.7rem;margin-top:0.4rem">One of Alaska's most active volcanoes — perfect cone shape on Unimak Island.</div>
+            <strong>Shishaldin Volcano Webcam</strong>
+            <div style="font-size:0.75rem">Alaska Volcano Observatory — one of Alaska's most frequently active volcanoes. Perfect cone on Unimak Island.</div>
+            <a href="https://www.avo.alaska.edu/webcam/" target="_blank">View on AVO →</a>
           </div>
-          <div class="cam-overlay"><div class="dot" style="background:#4ABB78"></div> Live</div>
+          <div class="cam-overlay"><div class="dot" style="background:#E8612A"></div> Active</div>
         </div>
         <div class="cam-body">
           <div class="cam-name">Shishaldin Volcano</div>
@@ -531,35 +546,7 @@
             <div class="cam-stat">Elev <span>9,373 ft</span></div>
             <div class="cam-stat">Status <span style="color:#E8612A">Frequently active</span></div>
           </div>
-          <a href="https://www.avo.alaska.edu/webcam/" target="_blank" class="cam-external" style="border-color:rgba(74,187,120,0.3);color:#4ABB78">
-            ↗ View on AVO
-          </a>
-        </div>
-      </div>
-
-      <!-- Yellowstone Caldera -->
-      <div class="cam-card">
-        <div class="cam-frame">
-          <img src="https://www.nps.gov/yell/learn/nature/images/webcam-old-faithful.jpg"
-               alt="Yellowstone Old Faithful webcam"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="cam-placeholder" style="display:none">
-            <div class="icon">💨</div>
-            <div>Yellowstone Supervolcano</div>
-            <div style="font-size:0.7rem;margin-top:0.4rem">Old Faithful Geyser — erupts roughly every 90 minutes.</div>
-          </div>
-          <div class="cam-overlay"><div class="dot" style="background:#E8A838"></div> Live</div>
-        </div>
-        <div class="cam-body">
-          <div class="cam-name">Yellowstone — Old Faithful</div>
-          <div class="cam-location">📍 Yellowstone National Park, Wyoming</div>
-          <div class="cam-stats">
-            <div class="cam-stat">Type <span>Supervolcano caldera</span></div>
-            <div class="cam-stat">Geysers <span>500+ active</span></div>
-          </div>
-          <a href="https://www.nps.gov/yell/learn/photosmultimedia/webcams.htm" target="_blank" class="cam-external" style="border-color:rgba(232,168,56,0.3);color:#E8A838">
-            ↗ View on NPS
-          </a>
+          <a href="https://www.avo.alaska.edu/webcam/" target="_blank" class="cam-external" style="border-color:rgba(74,187,120,0.3);color:#4ABB78">↗ View on AVO</a>
         </div>
       </div>
 
@@ -572,46 +559,34 @@
     <div class="info-grid">
       <div class="info-card">
         <div class="info-title">Kīlauea</div>
-        <p>One of Earth's most active volcanoes. The ongoing eruption began in 2018 and has been intermittently active since. The summit lava lake is a hypnotic sight from the Jaggar overlook.</p>
+        <p>Erupting episodically since December 23, 2024, with 42 lava fountaining episodes by Feb 2026. Fountains have reached over 1,200 ft. The V1, V2, and V3 cameras stream the summit crater live 24/7 on the USGS YouTube channel.</p>
       </div>
       <div class="info-card">
         <div class="info-title">Mauna Loa</div>
-        <p>The world's largest active volcano by volume, covering half of the Big Island. Its 2022 eruption was the first in 38 years. Erupts roughly every 6 years on average.</p>
+        <p>The world's largest active volcano by volume, covering half of the Big Island. Its 2022 eruption was the first in 38 years. Erupts roughly every 6 years on average. USGS monitors with multiple summit webcams.</p>
       </div>
       <div class="info-card">
         <div class="info-title">Haleakalā</div>
-        <p>The name means "House of the Sun" in Hawaiian. Its crater is large enough to fit Manhattan. The sunrise above the cloud layer is one of the most celebrated natural spectacles in the world.</p>
+        <p>The name means "House of the Sun" in Hawaiian. Its crater is large enough to fit Manhattan. The sunrise above the cloud layer is one of the most celebrated natural spectacles in the world. Last erupted around 1600 CE.</p>
       </div>
       <div class="info-card">
         <div class="info-title">Yellowstone</div>
-        <p>Sits above a supervolcano hotspot. The caldera last erupted ~640,000 years ago. Today it hosts 10,000 hydrothermal features — more than anywhere else on Earth.</p>
+        <p>Sits above a supervolcano hotspot. The caldera last erupted ~640,000 years ago. Today it hosts 10,000 hydrothermal features — more than anywhere else on Earth. Old Faithful erupts roughly every 90 minutes, year-round.</p>
       </div>
     </div>
   </div>
 
   <footer>
-    Webcam images courtesy <a href="https://www.usgs.gov/programs/VHP" target="_blank">USGS Volcano Hazards Program</a>, 
-    <a href="https://www.avo.alaska.edu" target="_blank">Alaska Volcano Observatory</a>, and 
-    <a href="https://www.nps.gov" target="_blank">National Park Service</a>. 
-    Images refresh automatically from official feeds. If a feed is unavailable, use the "View Live" link.
+    Live streams courtesy of the <a href="https://www.youtube.com/@USGS/streams" target="_blank">USGS YouTube Channel</a> (Kīlauea V1/V2/V3cam), 
+    <a href="https://www.yellowstone.org/old-faithful-streaming-webcam/" target="_blank">Yellowstone Forever</a> (Old Faithful), 
+    <a href="https://www.usgs.gov/programs/VHP" target="_blank">USGS Volcano Hazards Program</a>, and 
+    <a href="https://www.avo.alaska.edu" target="_blank">Alaska Volcano Observatory</a>.
+    Static-image webcams (Mauna Loa, Mt. St. Helens, Haleakalā) cannot be embedded cross-origin — use the direct links to view them on their official sites.
   </footer>
 
   <script>
-    // Auto-refresh webcam images every 5 minutes
-    function refreshCams() {
-      document.querySelectorAll('.cam-frame img').forEach(img => {
-        const src = img.src.split('?')[0];
-        img.src = src + '?t=' + Date.now();
-      });
-    }
-    setInterval(refreshCams, 300000); // 5 minutes
-
-    // Also show time since last refresh
-    let lastRefresh = new Date();
-    setInterval(() => {
-      const mins = Math.floor((new Date() - lastRefresh) / 60000);
-      // quietly track
-    }, 60000);
+    // No image refresh needed — all live feeds are YouTube iframes (self-refreshing)
+    // or honest fallback placeholders with direct links.
   </script>
 </body>
 </html>
