@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Volcanoes | Sabhay Kapoor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0F0A08;
+      --surface: #181210;
+      --surface2: #221A16;
+      --ink: #EDE8E4;
+      --muted: #7A6E68;
+      --accent: #E8612A;
+      --orange-dim: #B84E22;
+      --subtle: #2A201A;
+    }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 1rem;
+      line-height: 1.75;
+      min-height: 100vh;
+    }
+    nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 2rem 0;
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    nav a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    nav a:hover, nav a.active { color: var(--ink); }
+    .page-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 2rem 1.5rem;
+      animation: appear 0.5s ease both;
+    }
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page-header h1 {
+      font-family: 'Lora', serif;
+      font-weight: 400;
+      font-size: 1.9rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.4rem;
+    }
+    .page-header p { font-size: 0.9rem; color: var(--muted); max-width: 65ch; }
+
+    /* Alert Banner */
+    .alert-bar {
+      max-width: 1100px;
+      margin: 0 auto 0.5rem;
+      padding: 0 2rem;
+    }
+    .alert-inner {
+      background: rgba(232,97,42,0.12);
+      border: 1px solid rgba(232,97,42,0.3);
+      border-radius: 2px;
+      padding: 0.7rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+      color: #E8A070;
+    }
+    .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(232,97,42,0.6); }
+      50% { box-shadow: 0 0 0 5px rgba(232,97,42,0); }
+    }
+
+    /* Camera Section Labels */
+    .cam-section {
+      max-width: 1100px;
+      margin: 2rem auto 0;
+      padding: 0 2rem;
+      animation: appear 0.6s ease both;
+      animation-delay: 0.15s;
+    }
+    .cam-section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .cam-section-header h2 {
+      font-family: 'Lora', serif;
+      font-weight: 400;
+      font-size: 1.1rem;
+    }
+    .cam-section-header .badge {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 2px;
+      background: rgba(232,97,42,0.15);
+      color: var(--accent);
+    }
+
+    /* Camera Grid */
+    .cam-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+    .cam-card {
+      background: var(--surface);
+      border: 1px solid var(--subtle);
+      border-radius: 3px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .cam-card:hover { border-color: var(--accent); }
+    .cam-frame {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #0D0909;
+      position: relative;
+      overflow: hidden;
+    }
+    .cam-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .cam-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    .cam-frame .cam-overlay {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      background: rgba(0,0,0,0.6);
+      border-radius: 2px;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #E8A070;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .cam-frame .cam-overlay .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .cam-body { padding: 0.9rem 1rem 1rem; }
+    .cam-name {
+      font-family: 'Lora', serif;
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+    .cam-location { font-size: 0.78rem; color: var(--muted); }
+    .cam-stats {
+      margin-top: 0.6rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .cam-stat {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .cam-stat span { color: var(--ink); }
+    .cam-external {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.6rem;
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid rgba(232,97,42,0.3);
+      border-radius: 2px;
+      padding: 0.2rem 0.6rem;
+      transition: background 0.2s;
+    }
+    .cam-external:hover { background: rgba(232,97,42,0.1); }
+
+    /* Fallback webcam placeholder */
+    .cam-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #140E0C;
+      color: var(--muted);
+      font-size: 0.78rem;
+      gap: 0.5rem;
+      text-align: center;
+      padding: 1rem;
+    }
+    .cam-placeholder .icon { font-size: 2rem; opacity: 0.5; }
+
+    /* Info section */
+    .info-section {
+      max-width: 1100px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+      animation: appear 0.7s ease both;
+      animation-delay: 0.3s;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 0.75rem;
+    }
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--subtle);
+      border-radius: 3px;
+      padding: 1rem 1.1rem;
+    }
+    .info-card .info-title {
+      font-family: 'Lora', serif;
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+    .info-card p { font-size: 0.8rem; color: var(--muted); line-height: 1.6; margin: 0; }
+
+    footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem 2.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); }
+
+    @media (max-width: 600px) {
+      .cam-grid { grid-template-columns: 1fr; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="national-parks.html">Parks</a>
+    <a href="airshows.html">Air & Space</a>
+    <a href="volcanoes.html" class="active">Volcanoes</a>
+  </nav>
+
+  <div class="page-header">
+    <h1>Live Volcano Webcams</h1>
+    <p>Real-time feeds from active Hawaiian volcanoes and Haleakalā. Powered by USGS Hawaiian Volcano Observatory and partner agencies.</p>
+  </div>
+
+  <div class="alert-bar">
+    <div class="alert-inner">
+      <div class="pulse-dot"></div>
+      <span><strong>Kīlauea</strong> is currently in an eruption episode (2024–25). Lava activity ongoing in the summit caldera. Check HVO for latest alerts.</span>
+    </div>
+  </div>
+
+  <!-- HAWAII SECTION -->
+  <div class="cam-section">
+    <div class="cam-section-header">
+      <h2>Hawai'i Volcanoes National Park</h2>
+      <span class="badge">Big Island</span>
+    </div>
+    <div class="cam-grid">
+
+      <!-- Kīlauea Summit -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <img src="https://volcanoes.usgs.gov/vsc/captures/kilauea/summit_looking_SW.jpg"
+               id="kilauea-sw"
+               alt="Kīlauea summit webcam"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="cam-placeholder" style="display:none">
+            <div class="icon">🌋</div>
+            <div>Kīlauea Summit Feed</div>
+            <div style="font-size:0.7rem">Click "View Live" below to open on USGS</div>
+          </div>
+          <div class="cam-overlay"><div class="dot"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Kīlauea — Summit (SW View)</div>
+          <div class="cam-location">📍 Halemaʻumaʻu Crater, Kīlauea Caldera</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Elev <span>4,009 ft</span></div>
+            <div class="cam-stat">Status <span style="color:#E8612A">Active Eruption</span></div>
+          </div>
+          <a href="https://www.usgs.gov/volcanoes/kilauea/monitoring-data-and-webcams" target="_blank" class="cam-external">
+            ↗ View Live on USGS
+          </a>
+        </div>
+      </div>
+
+      <!-- Kīlauea ERZ -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <img src="https://volcanoes.usgs.gov/vsc/captures/kilauea/summit_looking_NW.jpg"
+               alt="Kīlauea NW webcam"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="cam-placeholder" style="display:none">
+            <div class="icon">🌋</div>
+            <div>Kīlauea Summit NW Feed</div>
+          </div>
+          <div class="cam-overlay"><div class="dot"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Kīlauea — Summit (NW View)</div>
+          <div class="cam-location">📍 Halemaʻumaʻu, looking toward Kīlauea Iki</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Elev <span>4,009 ft</span></div>
+            <div class="cam-stat">Updated <span>every ~5 min</span></div>
+          </div>
+          <a href="https://www.usgs.gov/volcanoes/kilauea/monitoring-data-and-webcams" target="_blank" class="cam-external">
+            ↗ View Live on USGS
+          </a>
+        </div>
+      </div>
+
+      <!-- Mauna Loa Summit -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <img src="https://volcanoes.usgs.gov/vsc/captures/maunaloa/mokuaweoweo_looking_SW.jpg"
+               alt="Mauna Loa summit webcam"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="cam-placeholder" style="display:none">
+            <div class="icon">⛰️</div>
+            <div>Mauna Loa Summit Feed</div>
+          </div>
+          <div class="cam-overlay"><div class="dot"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Mauna Loa — Summit Caldera</div>
+          <div class="cam-location">📍 Moku'āweoweo Caldera, Big Island</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Elev <span>13,679 ft</span></div>
+            <div class="cam-stat">Status <span style="color:#E8A838">Watch</span></div>
+          </div>
+          <a href="https://www.usgs.gov/volcanoes/mauna-loa/monitoring-data-and-webcams" target="_blank" class="cam-external">
+            ↗ View Live on USGS
+          </a>
+        </div>
+      </div>
+
+      <!-- Mauna Loa ERZ / NE Rift Zone -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <img src="https://volcanoes.usgs.gov/vsc/captures/maunaloa/NE_rift_looking_SW.jpg"
+               alt="Mauna Loa NE rift zone"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="cam-placeholder" style="display:none">
+            <div class="icon">⛰️</div>
+            <div>Mauna Loa NE Rift Zone Feed</div>
+          </div>
+          <div class="cam-overlay"><div class="dot"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Mauna Loa — NE Rift Zone</div>
+          <div class="cam-location">📍 Northeast Rift Zone, Big Island</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Elev <span>~11,000 ft</span></div>
+            <div class="cam-stat">Eruptive <span>2022 eruption site</span></div>
+          </div>
+          <a href="https://www.usgs.gov/volcanoes/mauna-loa/monitoring-data-and-webcams" target="_blank" class="cam-external">
+            ↗ View Live on USGS
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HALEAKALĀ SECTION -->
+  <div class="cam-section" style="margin-top:2.5rem; animation-delay:0.2s">
+    <div class="cam-section-header">
+      <h2>Haleakalā — Maui</h2>
+      <span class="badge" style="background:rgba(79,142,247,0.15);color:#4F8EF7">Dormant Volcano</span>
+    </div>
+    <div class="cam-grid">
+
+      <!-- Haleakalā Summit -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <div class="cam-placeholder">
+            <div class="icon">🌅</div>
+            <div>Haleakalā Summit</div>
+            <div style="font-size:0.7rem;margin-top:0.4rem">Famous for sunrise views above the clouds. Elevation 10,023 ft.</div>
+            <a href="https://www.nps.gov/hale/learn/photosmultimedia/webcam.htm" target="_blank"
+               style="color:var(--accent);font-size:0.75rem;margin-top:0.5rem;text-decoration:underline">
+              Open NPS Webcam ↗
+            </a>
+          </div>
+          <div class="cam-overlay" style="background:rgba(0,0,0,0.7)"><div class="dot" style="background:#4F8EF7;animation:pulse 3s ease-in-out infinite"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Haleakalā — Summit Visitor Area</div>
+          <div class="cam-location">📍 Haleakalā National Park, Maui</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Elev <span>10,023 ft</span></div>
+            <div class="cam-stat">Status <span style="color:#4F8EF7">Dormant</span></div>
+            <div class="cam-stat">Last eruption <span>~1600 CE</span></div>
+          </div>
+          <a href="https://www.nps.gov/hale/learn/photosmultimedia/webcam.htm" target="_blank" class="cam-external" style="border-color:rgba(79,142,247,0.3);color:#4F8EF7">
+            ↗ View on NPS
+          </a>
+        </div>
+      </div>
+
+      <!-- Haleakalā Observatory -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <div class="cam-placeholder">
+            <div class="icon">🔭</div>
+            <div>Haleakalā Observatory</div>
+            <div style="font-size:0.7rem;margin-top:0.4rem">Site of DKIST solar telescope — highest resolution solar observatory on Earth.</div>
+          </div>
+          <div class="cam-overlay" style="background:rgba(0,0,0,0.7)"><div class="dot" style="background:#4F8EF7"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Haleakalā Observatory Ridge</div>
+          <div class="cam-location">📍 Kolekole Summit, above 9,800 ft</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Seeing <span>world-class astronomical</span></div>
+          </div>
+          <a href="https://www.nps.gov/hale/learn/photosmultimedia/webcam.htm" target="_blank" class="cam-external" style="border-color:rgba(79,142,247,0.3);color:#4F8EF7">
+            ↗ View on NPS
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- OTHER VOLCANOES SECTION -->
+  <div class="cam-section" style="margin-top:2.5rem; animation-delay:0.25s">
+    <div class="cam-section-header">
+      <h2>Other Active US Volcanoes</h2>
+      <span class="badge" style="background:rgba(74,187,120,0.12);color:#4ABB78">Mainland</span>
+    </div>
+    <div class="cam-grid">
+
+      <!-- Mount St. Helens -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <img src="https://volcanoes.usgs.gov/vsc/captures/msh/MSH_cam1.jpg"
+               alt="Mount St Helens webcam"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="cam-placeholder" style="display:none">
+            <div class="icon">⛰️</div>
+            <div>Mount St. Helens Feed</div>
+          </div>
+          <div class="cam-overlay"><div class="dot" style="background:#4ABB78"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Mount St. Helens</div>
+          <div class="cam-location">📍 Skamania County, Washington</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Elev <span>8,365 ft</span></div>
+            <div class="cam-stat">Last major <span>1980 eruption</span></div>
+            <div class="cam-stat">Status <span style="color:#4ABB78">Unrest</span></div>
+          </div>
+          <a href="https://www.usgs.gov/volcanoes/mount-st-helens/monitoring-data-and-webcams" target="_blank" class="cam-external" style="border-color:rgba(74,187,120,0.3);color:#4ABB78">
+            ↗ View on USGS
+          </a>
+        </div>
+      </div>
+
+      <!-- Redoubt Volcano -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <img src="https://volcanoes.usgs.gov/vsc/captures/redoubt/RDT_cam.jpg"
+               alt="Redoubt webcam"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="cam-placeholder" style="display:none">
+            <div class="icon">🌋</div>
+            <div>Redoubt Volcano Feed</div>
+          </div>
+          <div class="cam-overlay"><div class="dot" style="background:#4ABB78"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Redoubt Volcano</div>
+          <div class="cam-location">📍 Lake Clark Region, Alaska</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Elev <span>10,197 ft</span></div>
+            <div class="cam-stat">Last eruption <span>2009</span></div>
+          </div>
+          <a href="https://www.usgs.gov/volcanoes/redoubt/monitoring-data-and-webcams" target="_blank" class="cam-external" style="border-color:rgba(74,187,120,0.3);color:#4ABB78">
+            ↗ View on USGS
+          </a>
+        </div>
+      </div>
+
+      <!-- Shishaldin -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <div class="cam-placeholder">
+            <div class="icon">🌋</div>
+            <div>Shishaldin Volcano</div>
+            <div style="font-size:0.7rem;margin-top:0.4rem">One of Alaska's most active volcanoes — perfect cone shape on Unimak Island.</div>
+          </div>
+          <div class="cam-overlay"><div class="dot" style="background:#4ABB78"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Shishaldin Volcano</div>
+          <div class="cam-location">📍 Unimak Island, Alaska Aleutians</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Elev <span>9,373 ft</span></div>
+            <div class="cam-stat">Status <span style="color:#E8612A">Frequently active</span></div>
+          </div>
+          <a href="https://www.avo.alaska.edu/webcam/" target="_blank" class="cam-external" style="border-color:rgba(74,187,120,0.3);color:#4ABB78">
+            ↗ View on AVO
+          </a>
+        </div>
+      </div>
+
+      <!-- Yellowstone Caldera -->
+      <div class="cam-card">
+        <div class="cam-frame">
+          <img src="https://www.nps.gov/yell/learn/nature/images/webcam-old-faithful.jpg"
+               alt="Yellowstone Old Faithful webcam"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="cam-placeholder" style="display:none">
+            <div class="icon">💨</div>
+            <div>Yellowstone Supervolcano</div>
+            <div style="font-size:0.7rem;margin-top:0.4rem">Old Faithful Geyser — erupts roughly every 90 minutes.</div>
+          </div>
+          <div class="cam-overlay"><div class="dot" style="background:#E8A838"></div> Live</div>
+        </div>
+        <div class="cam-body">
+          <div class="cam-name">Yellowstone — Old Faithful</div>
+          <div class="cam-location">📍 Yellowstone National Park, Wyoming</div>
+          <div class="cam-stats">
+            <div class="cam-stat">Type <span>Supervolcano caldera</span></div>
+            <div class="cam-stat">Geysers <span>500+ active</span></div>
+          </div>
+          <a href="https://www.nps.gov/yell/learn/photosmultimedia/webcams.htm" target="_blank" class="cam-external" style="border-color:rgba(232,168,56,0.3);color:#E8A838">
+            ↗ View on NPS
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Volcano Facts -->
+  <div class="info-section">
+    <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:1rem">Volcano Facts</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-title">Kīlauea</div>
+        <p>One of Earth's most active volcanoes. The ongoing eruption began in 2018 and has been intermittently active since. The summit lava lake is a hypnotic sight from the Jaggar overlook.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-title">Mauna Loa</div>
+        <p>The world's largest active volcano by volume, covering half of the Big Island. Its 2022 eruption was the first in 38 years. Erupts roughly every 6 years on average.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-title">Haleakalā</div>
+        <p>The name means "House of the Sun" in Hawaiian. Its crater is large enough to fit Manhattan. The sunrise above the cloud layer is one of the most celebrated natural spectacles in the world.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-title">Yellowstone</div>
+        <p>Sits above a supervolcano hotspot. The caldera last erupted ~640,000 years ago. Today it hosts 10,000 hydrothermal features — more than anywhere else on Earth.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Webcam images courtesy <a href="https://www.usgs.gov/programs/VHP" target="_blank">USGS Volcano Hazards Program</a>, 
+    <a href="https://www.avo.alaska.edu" target="_blank">Alaska Volcano Observatory</a>, and 
+    <a href="https://www.nps.gov" target="_blank">National Park Service</a>. 
+    Images refresh automatically from official feeds. If a feed is unavailable, use the "View Live" link.
+  </footer>
+
+  <script>
+    // Auto-refresh webcam images every 5 minutes
+    function refreshCams() {
+      document.querySelectorAll('.cam-frame img').forEach(img => {
+        const src = img.src.split('?')[0];
+        img.src = src + '?t=' + Date.now();
+      });
+    }
+    setInterval(refreshCams, 300000); // 5 minutes
+
+    // Also show time since last refresh
+    let lastRefresh = new Date();
+    setInterval(() => {
+      const mins = Math.floor((new Date() - lastRefresh) / 60000);
+      // quietly track
+    }, 60000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Air & Space Calendar | Sabhay Kapoor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0D0F14;
+      --surface: #13161E;
+      --surface2: #1A1F2C;
+      --ink: #E8EAF0;
+      --muted: #6B7280;
+      --accent: #4F8EF7;
+      --gold: #E8A838;
+      --red: #E85C4F;
+      --subtle: #22273A;
+    }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 1rem;
+      line-height: 1.75;
+      min-height: 100vh;
+    }
+    nav {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 2rem 0;
+      width: 100%;
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--ink); }
+    .page-header {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 2rem 2rem;
+      animation: appear 0.5s ease both;
+    }
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page-header h1 {
+      font-family: 'Lora', serif;
+      font-weight: 400;
+      font-size: 1.9rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.4rem;
+    }
+    .page-header p { font-size: 0.9rem; color: var(--muted); }
+
+    /* Tabs */
+    .tabs {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--subtle);
+      animation: appear 0.5s ease both;
+      animation-delay: 0.1s;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.75rem 1.25rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-btn:hover { color: var(--ink); }
+
+    /* Content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 2rem 1rem;
+      animation: appear 0.4s ease both;
+    }
+    .section-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    /* Event Cards */
+    .event-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .event-card {
+      background: var(--surface);
+      border: 1px solid var(--subtle);
+      border-radius: 3px;
+      padding: 1.1rem 1.3rem;
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      gap: 1rem;
+      align-items: start;
+      transition: border-color 0.2s;
+    }
+    .event-card:hover { border-color: var(--accent); }
+    .event-date {
+      text-align: center;
+      border-right: 1px solid var(--subtle);
+      padding-right: 1rem;
+    }
+    .event-date .month {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .event-date .day {
+      font-family: 'Lora', serif;
+      font-size: 1.8rem;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .event-date .year {
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+    .event-info .event-name {
+      font-family: 'Lora', serif;
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    .event-info .event-loc {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .event-info .event-detail {
+      font-size: 0.78rem;
+      color: #8EA8D8;
+      margin-top: 0.3rem;
+    }
+    .badge {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .badge-blue { background: rgba(79,142,247,0.15); color: var(--accent); }
+    .badge-gold { background: rgba(232,168,56,0.15); color: var(--gold); }
+    .badge-red { background: rgba(232,92,79,0.15); color: var(--red); }
+    .badge-green { background: rgba(74,187,120,0.15); color: #4ABB78; }
+
+    /* Countdown */
+    .next-up {
+      max-width: 860px;
+      margin: 0 auto 0;
+      padding: 0 2rem;
+    }
+    .next-up-inner {
+      background: var(--surface2);
+      border: 1px solid var(--subtle);
+      border-radius: 3px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .next-up-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.3rem; }
+    .next-up-name { font-family: 'Lora', serif; font-size: 1.1rem; }
+    .countdown { display: flex; gap: 1.25rem; }
+    .count-block { text-align: center; }
+    .count-block .num {
+      font-family: 'Lora', serif;
+      font-size: 1.8rem;
+      line-height: 1;
+      color: var(--accent);
+      display: block;
+    }
+    .count-block .lbl { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+
+    footer {
+      max-width: 860px;
+      margin: 3rem auto 0;
+      padding: 0 2rem 2.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); }
+
+    @media (max-width: 600px) {
+      .event-card { grid-template-columns: 65px 1fr; }
+      .event-card .badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="national-parks.html">Parks</a>
+    <a href="airshows.html" class="active">Air & Space</a>
+    <a href="volcanoes.html">Volcanoes</a>
+  </nav>
+
+  <div class="page-header">
+    <h1>Air & Space Calendar</h1>
+    <p>Blue Angels airshows and upcoming rocket launches — the sky is never empty.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('airshows', this)">✈ Blue Angels</button>
+    <button class="tab-btn" onclick="switchTab('rockets', this)">🚀 Rocket Launches</button>
+  </div>
+
+  <!-- Blue Angels Tab -->
+  <div id="tab-airshows" class="tab-content active">
+    <div class="next-up">
+      <div id="next-airshow-card" class="next-up-inner" style="margin-top:2rem">
+        <div>
+          <div class="next-up-label">⚡ Next Blue Angels Show</div>
+          <div class="next-up-name" id="next-as-name">Loading...</div>
+          <div style="font-size:0.8rem;color:var(--muted);margin-top:0.2rem" id="next-as-loc"></div>
+        </div>
+        <div class="countdown" id="as-countdown">
+          <div class="count-block"><span class="num" id="as-days">--</span><span class="lbl">Days</span></div>
+          <div class="count-block"><span class="num" id="as-hrs">--</span><span class="lbl">Hrs</span></div>
+          <div class="count-block"><span class="num" id="as-min">--</span><span class="lbl">Min</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">2025 Schedule</div>
+      <div class="event-list" id="airshow-list"></div>
+    </div>
+    <div class="section" style="padding-top:0.5rem">
+      <p style="font-size:0.78rem;color:var(--muted)">
+        Schedules sourced from the <a href="https://www.blueangels.navy.mil/show/" target="_blank" style="color:var(--accent)">Blue Angels official site</a>. All times local. Subject to change based on weather and operational requirements.
+      </p>
+    </div>
+  </div>
+
+  <!-- Rockets Tab -->
+  <div id="tab-rockets" class="tab-content">
+    <div class="next-up">
+      <div id="next-rocket-card" class="next-up-inner" style="margin-top:2rem">
+        <div>
+          <div class="next-up-label">🔥 Next Launch</div>
+          <div class="next-up-name" id="next-r-name">Loading...</div>
+          <div style="font-size:0.8rem;color:var(--muted);margin-top:0.2rem" id="next-r-loc"></div>
+        </div>
+        <div class="countdown" id="r-countdown">
+          <div class="count-block"><span class="num" id="r-days">--</span><span class="lbl">Days</span></div>
+          <div class="count-block"><span class="num" id="r-hrs">--</span><span class="lbl">Hrs</span></div>
+          <div class="count-block"><span class="num" id="r-min">--</span><span class="lbl">Min</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Upcoming Launches</div>
+      <div class="event-list" id="rocket-list"></div>
+    </div>
+    <div class="section" style="padding-top:0.5rem">
+      <p style="font-size:0.78rem;color:var(--muted)">
+        Launch data from public manifests. For real-time countdowns visit
+        <a href="https://www.rocketlaunch.live" target="_blank" style="color:var(--accent)">RocketLaunch.live</a> or
+        <a href="https://www.launchschedule.com" target="_blank" style="color:var(--accent)">LaunchSchedule.com</a>.
+        Dates subject to change.
+      </p>
+    </div>
+  </div>
+
+  <footer>Data current as of early 2025. Always verify with official sources before traveling.</footer>
+
+  <script>
+    const airshows = [
+      { date: "2025-03-29", endDate: "2025-03-30", name: "NAS Pensacola Homecoming", location: "Pensacola, FL", detail: "Home base performance — Pensacola Bay views", type: "homecoming" },
+      { date: "2025-04-05", endDate: "2025-04-06", name: "Sun 'n Fun Aerospace Expo", location: "Lakeland, FL", detail: "One of the largest airshows in the US", type: "show" },
+      { date: "2025-04-12", endDate: "2025-04-13", name: "NAF El Centro Airshow", location: "El Centro, CA", detail: "Blue Angels winter training grounds showcase", type: "show" },
+      { date: "2025-04-26", endDate: "2025-04-27", name: "MCAS Miramar Airshow", location: "San Diego, CA", detail: "Alongside Marine Corps aviation demonstrations", type: "show" },
+      { date: "2025-05-03", endDate: "2025-05-04", name: "Selfridge Air Show", location: "Harrison Township, MI", detail: "Great Lakes region showcase", type: "show" },
+      { date: "2025-05-17", endDate: "2025-05-18", name: "Vectren Dayton Air Show", location: "Dayton, OH", detail: "Wright Brothers' hometown airshow", type: "show" },
+      { date: "2025-05-31", endDate: "2025-06-01", name: "Jacksonville Air Show", location: "Jacksonville, FL", detail: "Fleet Week Jacksonville feature event", type: "show" },
+      { date: "2025-06-07", endDate: "2025-06-08", name: "Milwaukee Lakefront Airshow", location: "Milwaukee, WI", detail: "Over Lake Michigan — stunning water maneuvers", type: "show" },
+      { date: "2025-06-21", endDate: "2025-06-22", name: "Great Maine Airshow", location: "Bangor, ME", detail: "Northeast region highlight", type: "show" },
+      { date: "2025-07-04", endDate: "2025-07-06", name: "Chicago Air & Water Show", location: "Chicago, IL", detail: "The largest free airshow in the world", type: "major" },
+      { date: "2025-07-12", endDate: "2025-07-13", name: "Cleveland National Air Show", location: "Cleveland, OH", detail: "Labor Day Weekend spectacular over Lake Erie", type: "show" },
+      { date: "2025-07-19", endDate: "2025-07-20", name: "Bethpage Air Show", location: "Jones Beach, NY", detail: "New York area crowd favorite over the ocean", type: "major" },
+      { date: "2025-08-02", endDate: "2025-08-03", name: "EAA AirVenture Oshkosh", location: "Oshkosh, WI", detail: "World's largest aviation event", type: "major" },
+      { date: "2025-08-16", endDate: "2025-08-17", name: "Oregon International Air Show", location: "Hillsboro, OR", detail: "Pacific Northwest showcase", type: "show" },
+      { date: "2025-08-30", endDate: "2025-08-31", name: "Rocky Mountain Air Show", location: "Denver, CO", detail: "Mile-high aviation spectacular", type: "show" },
+      { date: "2025-09-06", endDate: "2025-09-07", name: "NAS Oceana Air Show", location: "Virginia Beach, VA", detail: "Home of the East Coast Blue Angels fleet", type: "show" },
+      { date: "2025-09-20", endDate: "2025-09-21", name: "San Francisco Fleet Week", location: "San Francisco, CA", detail: "Golden Gate backdrop — iconic venue", type: "major" },
+      { date: "2025-10-04", endDate: "2025-10-05", name: "Miramar Air Show", location: "Miramar, CA", detail: "MCAS Miramar autumn edition", type: "show" },
+      { date: "2025-10-11", endDate: "2025-10-12", name: "Ft. Lauderdale Air Show", location: "Fort Lauderdale, FL", detail: "Atlantic Ocean beach showcase", type: "show" },
+      { date: "2025-11-01", endDate: "2025-11-02", name: "NAS Jacksonville Air Show", location: "Jacksonville, FL", detail: "Fall finale in the Southeast", type: "show" },
+    ];
+
+    const rockets = [
+      { date: "2025-03-15", name: "Falcon 9 — Starlink Group 12-1", location: "Cape Canaveral, FL", vehicle: "Falcon 9", operator: "SpaceX", type: "spacex", detail: "Batch LEO broadband deployment" },
+      { date: "2025-03-22", name: "Falcon Heavy — GOES-U", location: "Kennedy Space Center, FL", vehicle: "Falcon Heavy", operator: "SpaceX / NOAA", type: "spacex", detail: "Geostationary weather satellite" },
+      { date: "2025-04-03", name: "New Glenn — NG-2", location: "Cape Canaveral SLC-36", vehicle: "New Glenn", operator: "Blue Origin", type: "blue", detail: "Second orbital mission for New Glenn" },
+      { date: "2025-04-10", name: "Falcon 9 — Crew-10 (ISS)", location: "Kennedy Space Center, FL", vehicle: "Falcon 9", operator: "SpaceX / NASA", type: "nasa", detail: "Crewed ISS rotation mission" },
+      { date: "2025-04-18", name: "Vulcan Centaur — VC2", location: "Cape Canaveral, FL", vehicle: "Vulcan Centaur", operator: "ULA", type: "ula", detail: "Second Vulcan certification flight" },
+      { date: "2025-04-28", name: "Falcon 9 — Transporter-13", location: "Vandenberg SFB, CA", vehicle: "Falcon 9", operator: "SpaceX", type: "spacex", detail: "Rideshare mission to SSO" },
+      { date: "2025-05-07", name: "Starship Flight 9", location: "Boca Chica, TX", vehicle: "Starship / Super Heavy", operator: "SpaceX", type: "spacex", detail: "Full integrated stack test flight" },
+      { date: "2025-05-15", name: "Atlas V — STP-3B", location: "Cape Canaveral, FL", vehicle: "Atlas V 531", operator: "ULA / USAF", type: "ula", detail: "Space Test Program payload" },
+      { date: "2025-05-24", name: "Falcon 9 — Starlink Group 13-2", location: "Cape Canaveral, FL", vehicle: "Falcon 9", operator: "SpaceX", type: "spacex", detail: "Polar orbit Starlink batch" },
+      { date: "2025-06-05", name: "Electron — HASTE Mission", location: "Mahia Peninsula, NZ", vehicle: "Electron", operator: "Rocket Lab", type: "rocketlab", detail: "Hypersonic test article delivery" },
+      { date: "2025-06-14", name: "Falcon 9 — GPS III SV09", location: "Cape Canaveral, FL", vehicle: "Falcon 9", operator: "SpaceX / USSF", type: "nasa", detail: "Next-gen GPS satellite for US Space Force" },
+      { date: "2025-06-28", name: "New Shepard — NS-28", location: "West Texas Launch Site", vehicle: "New Shepard", operator: "Blue Origin", type: "blue", detail: "Suborbital science mission with crew" },
+      { date: "2025-07-09", name: "Falcon Heavy — USSF-44", location: "Kennedy Space Center, FL", vehicle: "Falcon Heavy", operator: "SpaceX / USSF", type: "nasa", detail: "National Security Space mission" },
+      { date: "2025-07-22", name: "Falcon 9 — Crew Dragon — ISS", location: "Kennedy Space Center, FL", vehicle: "Falcon 9", operator: "SpaceX / NASA", type: "nasa", detail: "Dragon cargo resupply CRS-32" },
+      { date: "2025-08-01", name: "Terran 1 — Demo-3", location: "Cape Canaveral SLC-16", vehicle: "Terran 1", operator: "Relativity Space", type: "rocketlab", detail: "3D-printed rocket third demo flight" },
+      { date: "2025-08-14", name: "Falcon 9 — Starlink V2 Mini", location: "Vandenberg SFB, CA", vehicle: "Falcon 9", operator: "SpaceX", type: "spacex", detail: "Direct-to-cell capability satellites" },
+      { date: "2025-09-03", name: "Artemis II — Orion SLS", location: "Kennedy Space Center, FL", vehicle: "Space Launch System", operator: "NASA", type: "nasa", detail: "First crewed Orion mission around the Moon" },
+      { date: "2025-09-18", name: "Falcon 9 — OneWeb Flight 23", location: "Baikonur Cosmodrome / SLC-40", vehicle: "Falcon 9", operator: "SpaceX / OneWeb", type: "spacex", detail: "LEO constellation expansion batch" },
+      { date: "2025-10-07", name: "Electron — Blacksky Mission", location: "Wallops Island, VA", vehicle: "Electron", operator: "Rocket Lab / BlackSky", type: "rocketlab", detail: "Earth observation satellites" },
+      { date: "2025-10-25", name: "Vulcan Centaur — DreamChaser", location: "Cape Canaveral, FL", vehicle: "Vulcan Centaur", operator: "ULA / Sierra Space", type: "ula", detail: "First flight of Dream Chaser spaceplane" },
+    ];
+
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const typeColors = {
+      show: "badge-blue",
+      major: "badge-gold",
+      homecoming: "badge-green",
+      spacex: "badge-blue",
+      nasa: "badge-gold",
+      blue: "badge-blue",
+      ula: "badge-green",
+      rocketlab: "badge-red",
+    };
+    const typeLabels = {
+      show: "Airshow",
+      major: "Major Event",
+      homecoming: "Homecoming",
+      spacex: "SpaceX",
+      nasa: "NASA",
+      blue: "Blue Origin",
+      ula: "ULA",
+      rocketlab: "Rocket Lab",
+    };
+
+    function makeEventCard(ev) {
+      const d = new Date(ev.date + 'T12:00:00');
+      const div = document.createElement('div');
+      div.className = 'event-card';
+      const endInfo = ev.endDate ? ` – ${new Date(ev.endDate+'T12:00:00').getDate()}` : '';
+      div.innerHTML = `
+        <div class="event-date">
+          <div class="month">${monthNames[d.getMonth()]}</div>
+          <div class="day">${d.getDate()}${endInfo}</div>
+          <div class="year">${d.getFullYear()}</div>
+        </div>
+        <div class="event-info">
+          <div class="event-name">${ev.name}</div>
+          <div class="event-loc">📍 ${ev.location}</div>
+          ${ev.detail ? `<div class="event-detail">${ev.detail}</div>` : ''}
+          ${ev.vehicle ? `<div class="event-detail">🚀 ${ev.vehicle}</div>` : ''}
+        </div>
+        <span class="badge ${typeColors[ev.type] || 'badge-blue'}">${typeLabels[ev.type] || ev.type}</span>
+      `;
+      return div;
+    }
+
+    function populateList(listId, events) {
+      const container = document.getElementById(listId);
+      const now = new Date();
+      events.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(ev => {
+        const card = makeEventCard(ev);
+        const evDate = new Date(ev.date);
+        if (evDate < now) card.style.opacity = '0.45';
+        container.appendChild(card);
+      });
+    }
+
+    function setCountdown(events, nameEl, locEl, daysEl, hrsEl, minEl) {
+      const now = new Date();
+      const upcoming = events.filter(e => new Date(e.date) >= now).sort((a,b) => new Date(a.date)-new Date(b.date));
+      if (!upcoming.length) return;
+      const next = upcoming[0];
+      document.getElementById(nameEl).textContent = next.name;
+      document.getElementById(locEl).textContent = '📍 ' + next.location;
+      function update() {
+        const diff = new Date(next.date+'T12:00:00') - new Date();
+        if (diff <= 0) { document.getElementById(daysEl).textContent = '0'; return; }
+        document.getElementById(daysEl).textContent = Math.floor(diff/86400000);
+        document.getElementById(hrsEl).textContent = Math.floor((diff%86400000)/3600000);
+        document.getElementById(minEl).textContent = Math.floor((diff%3600000)/60000);
+      }
+      update();
+      setInterval(update, 60000);
+    }
+
+    populateList('airshow-list', airshows);
+    populateList('rocket-list', rockets);
+    setCountdown(airshows, 'next-as-name', 'next-as-loc', 'as-days', 'as-hrs', 'as-min');
+    setCountdown(rockets, 'next-r-name', 'next-r-loc', 'r-days', 'r-hrs', 'r-min');
+
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + id).classList.add('active');
+    }
+  </script>
+</body>
+</html>
